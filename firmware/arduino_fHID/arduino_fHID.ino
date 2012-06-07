@@ -3,11 +3,12 @@
 #define THR 21
 //#define _FHID_DEBUG_
 
-#define DUR_LEN 20
+#define DUR_LEN 50
 
 const byte envInPin = 2;
 const byte nOE = 7;  // n output enable
-unsigned long duration[DUR_LEN];
+unsigned long duration;
+byte hidData[DUR_LEN];
 unsigned long time;
 int i;
 byte dataReady;
@@ -21,10 +22,17 @@ RfidHID hid(nOE);
 void checkTiming() {
 
   if(i < DUR_LEN) {
-    duration[i++] = micros() - time;
+    duration = micros() - time;
     time = micros();
-    //duration[i++] = i;
-  } else {
+    
+    if(duration > 40) {
+      if(duration < 66)
+        hidData[i++] = 0;
+      else if(duration < 90)
+        hidData[i++] = 1;
+    }
+
+  } else { // i >= DUR_LEN
     dataReady = 1;
   }
 
@@ -62,8 +70,8 @@ void readData() {
   hid.genOE(0);      
   
   for(i=1; i<DUR_LEN; i++) {
-    Serial.print(duration[i], DEC);  
-    Serial.print(" ");
+    Serial.print(hidData[i], DEC);  
+    //Serial.print(" ");
   }
   Serial.println();
   
