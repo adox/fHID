@@ -3,10 +3,12 @@
 
 
 data_buffer in_buffer = { {0}, 0, 0 };
-decoder_vars decoder = {0, 0, 0, 'X'};
+decoder_vars decoder = {0, 0, 0, 'X', 0};
 
 #define mCapture0() (duration > 40 && duration < 66)
 #define mCapture1() (duration >= 66 && duration < 90)
+#define mInitDecoder() {decoder.count0 = 0; decoder.count1 = 0; decoder.prev = 'X'; decoder.parity = 1; in_buffer.len = 0;}
+#define mInsertBit(b) {in_buffer.data[in_buffer.len++] = b; decoder.parity ^= b;}
 
 void timingDecode() {
   static unsigned long duration;
@@ -50,38 +52,54 @@ void timingDecode() {
           if( decoder.count0 >= 22 ) {
             // zero and start of header - quit
             if(decoder.prev == 1) {
-              in_buffer.data[in_buffer.len++] = 1;
-              in_buffer.ready = 1;
+              mInsertBit(1);
+              // since this is last bit, undo parity
+              decoder.parity ^= 1;
+              
+              // check parity
+              if(decoder.parity == in_buffer.data[in_buffer.len -1])
+                in_buffer.ready = 1;
+              else {
+                // error - go to start
+                mInitDecoder();           
+                decoder.state = MAN_HEAD_0;
+              } 
               break;
             } else {
               // error - go to start
-              decoder.count0 = 0;
-              decoder.count1 = 0;              
+              mInitDecoder();           
               decoder.state = MAN_HEAD_0;
               break;
             } 
           
           } else if( decoder.count0 >= 16 ) {
             // start of header - quit
-            in_buffer.ready = 1;
+            // but first check parity
+            if(decoder.parity == in_buffer.data[in_buffer.len -1])
+              in_buffer.ready = 1;
+            else {
+              // error - go to start
+              mInitDecoder();           
+              decoder.state = MAN_HEAD_0;
+            } 
+
             break;  
           
           } else if( decoder.count0 >= 9 ) {
             // data: 00
             if(decoder.prev == 1) {
-              in_buffer.data[in_buffer.len++] = 1;
+              mInsertBit(1);
               decoder.prev = 0;
             } else {
             // error - go to start  
-              decoder.count0 = 0;
-              decoder.count1 = 0;              
+              mInitDecoder();             
               decoder.state = MAN_HEAD_0;            
             }
           
           } else if( decoder.count0 >= 4 ) {
             // data: 0
             if(decoder.prev == 1) {
-              in_buffer.data[in_buffer.len++] = 1;
+              mInsertBit(1);
               decoder.prev = 'X';            
             } else {
               decoder.prev = 0;
@@ -96,19 +114,18 @@ void timingDecode() {
           if( decoder.count1 >= 9 ) {
             // data: 11
             if(decoder.prev == 0) {
-              in_buffer.data[in_buffer.len++] = 0;
+              mInsertBit(0);
               decoder.prev = 1;
             } else {
             // error - go to start  
-              decoder.count0 = 0;
-              decoder.count1 = 0;              
+              mInitDecoder();      
               decoder.state = MAN_HEAD_0;                
             }
         
           } else if( decoder.count1 >= 4 ) {
             // data: 1
             if(decoder.prev == 0) {
-              in_buffer.data[in_buffer.len++] = 0;
+              mInsertBit(0);
               decoder.prev = 'X';
             } else {
               decoder.prev = 1;
@@ -154,9 +171,8 @@ void RfidHID::readData() {
   inBuf->len = 0;
   
   // init struct decoder
+  mInitDecoder();
   decoder.state = MAN_HEAD_0;
-  decoder.count0 = 0;
-  decoder.count1 = 0;
   
   timeout = 0;
   genOE(1);  
@@ -213,6 +229,10 @@ void RfidHID::convert() {
   i = 0;
   k = 0;
   
+  // zero buf
+  for( j = 0; j < 6; j++)
+    inBufHex[j] = 0;
+  
   for( j = inBuf->len - 1; j >= 0; j-- ) {
     inBufHex[i] |= inBuf->data[j] << k;
     k++;
@@ -228,7 +248,7 @@ void RfidHID::convert() {
 
 void RfidHID::printDataHex() {
   int i;
-  for(i=5; i > 0; i--) {
+  for(i=5; i >= 0; i--) {
     Serial.print(inBufHex[i], HEX);
     Serial.print(" ");
   }  
@@ -238,7 +258,12 @@ void RfidHID::printDataHex() {
 void RfidHID::printCardNum() {
   unsigned long num;
 
-  num = (inBufHex[2] << 16) | (inBufHex[1] << 8) | (inBufHex[0]);
+  //num = (inBufHex[2] << 16) | (inBufHex[1] << 8) | (inBufHex[0]);
+  num = inBufHex[2];
+  num <<= 8;
+  num |= inBufHex[1];
+  num <<= 8;
+  num |= inBufHex[0];
   num >>= 1; // shift out parity
   num &= 0x1ffff; // mask only 17 lsb's
   
