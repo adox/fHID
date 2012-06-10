@@ -160,7 +160,7 @@ void RfidHID::genOE(byte ena) {
 }
 
 
-void RfidHID::readData() {
+byte RfidHID::readData() {
   unsigned long startTime;
   
   #ifdef _FHID_DEBUG_
@@ -200,11 +200,14 @@ void RfidHID::readData() {
   #endif
 
   detachInterrupt(0);
-  RfidHID::genOE(0);      
+  genOE(0);      
+  convert();
   
   #ifdef _FHID_DEBUG_
   Serial.println("Leaving readData()");  
   #endif
+  
+  return (timeout ? 0 : 1);    
 }
 
 void RfidHID::printData() {
@@ -270,3 +273,10 @@ void RfidHID::printCardNum() {
   Serial.println(num,DEC);
 }
 
+void RfidHID::printDataAll() {
+  Serial.print("Data bin: "); printData();
+  Serial.print("Data len: "); Serial.println(inBuf->len, DEC);
+  Serial.print("Data hex: "); printDataHex();
+  Serial.print("Card num: "); printCardNum();  
+  Serial.println();
+}

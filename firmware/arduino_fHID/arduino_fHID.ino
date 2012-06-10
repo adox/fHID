@@ -16,10 +16,8 @@ void setup() {
 }
 
 void loop() {
-  hid.readData();
-  hid.printData();
-  hid.convert();
-  hid.printDataHex();
-  hid.printCardNum();
+  if(hid.readData())
+    hid.printDataAll();
+    
   delay(1000);
 }

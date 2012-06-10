@@ -38,11 +38,12 @@ class RfidHID {
     
      RfidHID(byte nOE);
      void genOE(byte ena);
-     void readData();
+     byte readData();
      void convert();
      void printData();
      void printDataHex();
      void printCardNum();
+     void printDataAll();
     
      void writeData();  
 };
