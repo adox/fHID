@@ -21,13 +21,6 @@ void InitApp(void)
     /* Setup analog functionality and port direction */
 
     /* Initialize peripherals */
-    /* init CCP1 125 kHz 50% DT */
-    TRISIO  = 0b11111111;
-    PR2     = 15;
-    CCP1CON = 0b00001111;
-    CCPR1L  = 8;
-    T2CON   = 0b00000100;
-    TRISIO  &= 0b11111011;
 
     /* init GP0 GP1 as digital pins*/
     ANSELbits.ANS0 = 0;
@@ -44,16 +37,28 @@ void InitApp(void)
     /* init GP4 pullup */
     WPUbits.WPU4 = 1;
 
-    /* set TMR1 */
-    T1CONbits.TMR1CS = 1; // clk from t1cki pin
-    TMR1H = 0xFF;
-    TMR1L = 0x00;
-    T1CONbits.TMR1ON = 1;
+    /* if READ, GP0 = R/E = 1 */
+    /* init CCP1 125 kHz 50% DT */
+    if(GPIObits.GP0) {
+        TRISIO  = 0b11111111;
+        PR2     = 15;
+        CCP1CON = 0b00001111;
+        CCPR1L  = 8;
+        T2CONbits.TMR2ON = 1;
+        TRISIO  &= 0b11111011;
+    } else {
+        /* if READ, GP0 = R/E = 0 */
+        /* set TMR1 */
+        T1CONbits.TMR1CS = 1; // clk from t1cki pin
+        TMR1H = 0xFF;
+        TMR1L = 0x00;
+        T1CONbits.TMR1ON = 1;
 
-    /* Enable interrupts */
-    PIR1bits.TMR1IF = 0;
-    PIE1bits.TMR1IE = 1;
-    INTCONbits.PEIE = 1;
-    INTCONbits.GIE = 1;
+        /* Enable interrupts */
+        PIR1bits.TMR1IF = 0;
+        PIE1bits.TMR1IE = 1;
+        INTCONbits.PEIE = 1;
+        INTCONbits.GIE = 1;
+    };
 }
 

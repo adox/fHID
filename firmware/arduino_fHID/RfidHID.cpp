@@ -2,8 +2,11 @@
 
 
 
-data_buffer in_buffer = { {0}, 0, 0 };
+data_buffer in_buffer = { {0}, 0, 0, 0, 0};
 decoder_vars decoder = {0, 0, 0, 'X', 0};
+
+byte emulate_div;
+byte emulateNextBit;
 
 #define mCapture0() (duration > 40 && duration < 66)
 #define mCapture1() (duration >= 66 && duration < 90)
@@ -147,18 +150,64 @@ void timingDecode() {
 
 }
 
+void emulate() {
+  if(emulate_div == 0) {
+    emulate_div = (emulateNextBit ? 4 : 5);
+    digitalWrite(BIT_IN, emulateNextBit);
+    emulateNextBit = in_buffer.data[++in_buffer.index];
+
+    if(in_buffer.index >= in_buffer.len) {
+      in_buffer.index = 0;
+      in_buffer.emulateCount++;
+    }
+    
+  } else {
+    emulate_div--;
+  }
+  
+}
+
 RfidHID::RfidHID(byte nOE) {
   RfidHID::nOE = nOE;
   pinMode(RfidHID::nOE, OUTPUT);
   genOE(0); // shut off  
   
+  pinMode(NRST, OUTPUT);
+  digitalWrite(NRST, 0);  // hold in reset
+  
+  pinMode(BIT_IN, OUTPUT);
+  pinMode(OCLK, INPUT);
+  pinMode(RE, OUTPUT);
+  
   inBuf = &in_buffer;
+}
+
+void RfidHID::reset(byte r) {
+  if(r)
+    digitalWrite(NRST, 0);  
+  else
+    digitalWrite(NRST, 1);  
 }
 
 void RfidHID::genOE(byte ena) {
   (ena ? digitalWrite(RfidHID::nOE, 0) : digitalWrite(RfidHID::nOE, 1));
 }
 
+void RfidHID::mode(byte m) {
+  switch(m) {
+    case MODE_READ:
+      digitalWrite(RE, 1);
+      delay(10);
+      digitalWrite(NRST, 1);
+    break;
+
+    case MODE_EMU:
+      digitalWrite(RE, 0);
+      delay(10);
+      digitalWrite(NRST, 1);
+    break;
+  }
+}
 
 byte RfidHID::readData() {
   unsigned long startTime;
@@ -166,6 +215,9 @@ byte RfidHID::readData() {
   #ifdef _FHID_DEBUG_
   Serial.println("Entering readData()");
   #endif
+  
+  if(digitalRead(RE) != MODE_READ)
+    mode(MODE_READ);
   
   inBuf->ready = 0;
   inBuf->len = 0;
@@ -279,4 +331,39 @@ void RfidHID::printDataAll() {
   Serial.print("Data hex: "); printDataHex();
   Serial.print("Card num: "); printCardNum();  
   Serial.println();
+}
+
+byte RfidHID::emulateData() {
+  byte data[] = {0x00, 0x10, 0x2D, 0xD0, 0x62, 0x5A};
+  unsigned long startTime;
+  
+  in_buffer.index = 0;
+  in_buffer.emulateCount = 0;
+  emulate_div = 0;
+  in_buffer.data[0] = 1;
+  in_buffer.data[1] = 0;
+  in_buffer.data[2] = 1;
+  in_buffer.data[3] = 0;
+  
+  mode(MODE_EMU);  
+  
+  attachInterrupt(1, emulate, RISING);
+  
+  startTime = millis();
+  while(inBuf->emulateCount < 3) {
+    if(millis() - startTime > 1000) {
+
+      #ifdef _FHID_DEBUG_
+      Serial.println("Emulate timeout!");
+      #endif
+
+      timeout = 1;      
+      break;
+    }
+  };  
+  
+  reset(1);
+  detachInterrupt(1);
+
+  return (timeout ? 0 : 1);  
 }

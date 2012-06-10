@@ -6595,6 +6595,20 @@ Source: http://ww1.microchip.com/downloads/en/DeviceDoc/41211D_.pdf</description
 <label x="2.54" y="124.46" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="R/E" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="GP0/AN0/CIN+/ICSPDAT/ULPWU"/>
+<wire x1="40.64" y1="114.3" x2="10.16" y2="114.3" width="0.1524" layer="91"/>
+<label x="2.54" y="114.3" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="NRST" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="GP3/!MCLR!/VPP"/>
+<wire x1="40.64" y1="121.92" x2="10.16" y2="121.92" width="0.1524" layer="91"/>
+<label x="2.54" y="121.92" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
