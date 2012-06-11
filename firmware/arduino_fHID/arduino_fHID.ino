@@ -1,17 +1,11 @@
-#include "RfidHID.h"
+#include "RfidHid.h"
 
 //#define _FHID_DEBUG_
 
-const byte envInPin = 2;
-const byte oclkPin = 3;
-const byte nOE = 7;  // n output enable
 byte inByte;
 
-RfidHID hid(nOE);
-
 void setup() {
-  pinMode(envInPin, INPUT);
-  pinMode(oclkPin, INPUT);
+  Hid.begin();
   
   Serial.begin(9600);
   Serial.println("fHID ready");
@@ -24,14 +18,14 @@ void loop() {
     
     switch(inByte) {
       case 'r':
-        if(hid.readData())
-          hid.printDataAll();
+        if(Hid.read())
+          Hid.reader.tagData.printAll();
         else
           Serial.println("Timeout");
       break;
       
       case 'e':
-        if(hid.emulateData())
+        if(Hid.emulate())
           Serial.println("Emulate OK");
         else
           Serial.println("Emulate timeout");

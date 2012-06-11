@@ -1,7 +1,9 @@
 #ifndef _RFID_HID_
 #define _RFID_HID_
 
-#include "Arduino.h"
+#include "RfidHidReader.h"
+#include "RfidHidEmulator.h"
+
 // lotos  000000001000000101101110100 00011000100101101 0
 // lotos  000000001000000101101110100000110001001011010, 102DD0625A
 // flex   
@@ -10,58 +12,47 @@
 //            
 
 // pin definitions
+#define PIN_ENV_IN  2
+#define PIN_OCLK_IN 3
+#define PIN_NOE_OUT 7
+
 #define NRST 8
 #define BIT_IN 9
 #define OCLK 3
 #define RE 10
 
 #define MODE_READ 1
-#define MODE_EMU  2
+#define MODE_EMU  0
+
+#define RESET_HOLD 0
+#define RESET_RUN  1
+
+#define OE_ON  0
+#define OE_OFF 1
 
 #define RFID_BUF_LEN 100
-
-enum {MAN_HEAD_0, MAN_HEAD_1, MAN_DATA, MAN_STOP};
 
 extern byte emulate_div;
 extern byte emulateNextBit;
 
-struct data_buffer {
-  unsigned long data[RFID_BUF_LEN];
-  int len;
-  int index;
-  byte ready;
-  byte emulateCount;
-};
-
-struct decoder_vars {
-  byte state;
-  byte count0;
-  byte count1;
-  byte prev;
-  byte parity;
-};
-
-class RfidHID {
+class RfidHid {
   private:
-     byte nOE;  // generator: n output enable pin
-     data_buffer *inBuf;
+
     
   public:
-     byte timeout;
-     byte inBufHex[6];
+    RfidHidReader   reader;
+    RfidHidEmulator emulator;
     
-     RfidHID(byte nOE);
-     void reset(byte r);
-     void genOE(byte ena);
-     void mode(byte m);
-     byte readData();
-     void convert();
-     void printData();
-     void printDataHex();
-     void printCardNum();
-     void printDataAll();
-    
-     byte emulateData();  
+    RfidHid();
+    void begin() { };
+    void reset(byte r);
+    void genOE(byte ena);
+    void mode(byte m);
+    byte read()    { mode(MODE_READ); genOE(OE_ON);  return reader.read(); };
+    byte emulate() { mode(MODE_EMU);  genOE(OE_OFF); return emulator.emulate(); };
 };
+
+// instantinate reference
+extern RfidHid Hid;
 
 #endif
