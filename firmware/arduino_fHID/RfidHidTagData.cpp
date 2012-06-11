@@ -51,10 +51,25 @@ void RfidHidTagData::printCardNum() {
   unsigned long cardNum = 0;
   int i;
 
-  for( i = 18; i > 1; i--) {
+  for( i = length - 18; i < length - 1; i++) {
     cardNum <<= 1;
     cardNum |= getData(i);
   }
 
   Serial.println(cardNum,DEC);
+}
+
+// load data
+void RfidHidTagData::loadHex(byte data[]) {
+  int i,j;
+  
+  clear();
+  
+  for(j = 4; j >= 0; j--)
+    insertBit( (data[0] & (0x01 << j) ? 1 : 0) );
+    
+  for(i = 1; i <= 5; i++) {
+    for(j = 7; j >= 0; j--)
+      insertBit( (data[i] & (0x01 << j) ? 1 : 0) );
+  }
 }

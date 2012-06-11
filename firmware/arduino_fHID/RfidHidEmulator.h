@@ -3,16 +3,25 @@
 
 #include "RfidHidTagData.h"
 
+#define BIT_IN 9
+#define EMULATE_CYCLES_MAX 3
+
 extern void intEmulateWrapper(); // in RfidHid.cpp
 
 class RfidHidEmulator {
   public:
-    byte emulate_div;
-    byte emulateNextBit;
+    byte divider;
+    byte nextBit;
+    byte timeout;
+    byte cycles;
+    RfidHidTagData tagData;
 
-    byte emulate();
-	void intEmulate();
-	void hex2raw(); // convert hex data to bit train + header	
+    RfidHidEmulator() { reset(); };
+    byte reset() { divider = 0; timeout = 0; cycles = 0; };
+    byte emulate();     // to start emulation
+    void intEmulate();  // attached to interrupt (indirectly by plain function)
+    void outputBit(byte b) { digitalWrite(BIT_IN, b); };
+    void hex2raw(); // convert hex data to bit train + header	
 
 };
 

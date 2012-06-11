@@ -7,6 +7,7 @@ byte RfidHidReader::read() {
   tagData.clear();
   decoder.reset();
   readTimeout = 0;
+  tagDataReady = 0;
 
   attachInterrupt(0, intReadWrapper, RISING); 
 

@@ -1,9 +1,6 @@
 #include "Arduino.h"
 #include "RfidHid.h"
 
-// instantinate
-RfidHid Hid;
-
 // wrappers //
 // plain function for attaching to interrupt
 void intEmulateWrapper() {
@@ -43,9 +40,33 @@ void RfidHid::mode(byte m) {
    delay(1);
 }
 
+byte RfidHid::read() {
+  byte readStatus;
+  
+  mode(MODE_READ); 
+  genOE(OE_ON);  
+  reset(RESET_RUN); 
+  readStatus = reader.read();
+  
+  genOE(OE_OFF);
+  reset(RESET_HOLD);
+  
+  return readStatus;
+};
+
+byte RfidHid::emulate() { 
+  byte emulateStatus;
+  
+  mode(MODE_EMU);  
+  genOE(OE_OFF); 
+  reset(RESET_RUN); 
+  emulateStatus = emulator.emulate(); 
+  
+  reset(RESET_HOLD);
+  
+  return emulateStatus;
+};
 
 
-
-
-
-
+// instantinate
+RfidHid Hid;

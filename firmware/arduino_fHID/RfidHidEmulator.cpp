@@ -2,21 +2,21 @@
 #include "RfidHidEmulator.h"
 
 void RfidHidEmulator::intEmulate() {
-  /*
-  if(emulate_div == 0) {
-    emulate_div = (emulateNextBit ? 4 : 5);
-    //digitalWrite(BIT_IN, emulateNextBit);
-    emulateNextBit = in_buffer.data[++in_buffer.index];
 
-    if(in_buffer.index >= in_buffer.len) {
-      in_buffer.index = 0;
-      in_buffer.emulateCount++;
+  if(divider == 0) {
+    divider = (nextBit ? 4 : 5);
+    outputBit(nextBit);
+    nextBit = tagData.getDataNext();
+
+    if( tagData.isEnd() ) {
+      tagData.resetIndex();
+      cycles++;
     }
     
   } else {
-    emulate_div--;
+    divider--;
   }
-  */
+
 };
 
 // convert hex to bin + header and encode it to manchester
@@ -55,24 +55,19 @@ void RfidHidEmulator::hex2raw() {
 
 
 byte RfidHidEmulator::emulate() {
-/*
+
   unsigned long startTime;
+  byte exampleData[] = {0x00, 0x10, 0x2D, 0xD0, 0x62, 0x5A};
 
-  hex2raw();
-  printDataAll();
+  //hex2raw(); // conversion
+  reset();  
+  tagData.loadHex( exampleData );
+  tagData.printAll();
   
-  inBuf.index = 0;
-  inBuf.ready = 0;
-  inBuf.emulateCount = 0;
-
-  emulate_div = 0;
-  
-  mode(MODE_EMU);  
-  attachInterrupt(1, emulate, RISING);
-  reset(RESET_RUN);
+  attachInterrupt(1, intEmulateWrapper, RISING);
   
   startTime = millis();
-  while(inBuf->emulateCount < 3) {
+  while(cycles < EMULATE_CYCLES_MAX) {
     if(millis() - startTime > 1000) {
 
       timeout = 1;      
@@ -81,9 +76,7 @@ byte RfidHidEmulator::emulate() {
     }
   };  
   
-  reset(RESET_HOLD);
   detachInterrupt(1);
 
   return (timeout ? 0 : 1);  
-  */
 }
