@@ -9,6 +9,11 @@ void RfidHidTagData::printAll() {
   Serial.println();
 };
 
+void RfidHidTagData::printEncoded() {
+  Serial.print("Data bin: "); printBin();
+  Serial.println();  
+}
+
 void RfidHidTagData::printBin() {
 
   for(int i = 0; i < length; i++) {
@@ -72,4 +77,31 @@ void RfidHidTagData::loadHex(byte data[]) {
     for(j = 7; j >= 0; j--)
       insertBit( (data[i] & (0x01 << j) ? 1 : 0) );
   }
+}
+
+// encode loaded data to machester + header
+void RfidHidTagData::encode() {
+	byte dataCopy[DATA_BUF_LEN];
+	int lengthCopy;
+	
+	memcpy(data, dataCopy, length); // store original data to temp buffer
+	lengthCopy = length;			// store length
+	
+	clear();
+	insertBit(0);	// header 3 x 0 + 3 x 1
+	insertBit(0);
+	insertBit(0);
+	insertBit(1);
+	insertBit(1);
+	insertBit(1);
+	
+	for(int i = 0; i < lengthCopy; i++) {
+		if( dataCopy[i] == 1 ) {
+			insertBit( dataCopy[1] );
+			insertBit( dataCopy[0] );
+		} else {
+			insertBit( dataCopy[0] );
+			insertBit( dataCopy[1] );
+		}			
+	}
 }

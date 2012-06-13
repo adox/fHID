@@ -22,6 +22,8 @@ class RfidHidTagData {
     void printBin();
     void printHex();
     void printCardNum();
+	void printEncoded();
+	void encode();
 	
   private:
     int  length;

@@ -19,40 +19,6 @@ void RfidHidEmulator::intEmulate() {
 
 };
 
-// convert hex to bin + header and encode it to manchester
-void RfidHidEmulator::hex2raw() {
-  /*
-  int i,j,k;
-  
-  i = j = k = 0;
-  inBuf.len = 0;
-  inBuf.index = 0;
-  inBuf.ready = 0;
-  
-  // header
-  inBuf.data[inBuf.len++] = 0;
-  inBuf.data[inBuf.len++] = 0;
-  inBuf.data[inBuf.len++] = 0;
-  inBuf.data[inBuf.len++] = 1;
-  inBuf.data[inBuf.len++] = 1;
-  inBuf.data[inBuf.len++] = 1;
-  
-  // 5 lsb only from first byte
-  for(j=4; j >= 0; j++) {
-     inBuf.data[inBuf.len++] = (inBufHex[i] & (0x01 << j) ? 1 : 0);
-	 inBuf.data[inBuf.len++] = (inBufHex[i] & (0x01 << j) ? 0 : 1);
-  }
-
-  // and other bits
-  for(i=4; i >= 0; i--) {
-    for(j=7; j >= 0; j++) {
-       inBuf.data[inBuf.len++] = (inBufHex[i] & (0x01 << j) ? 1 : 0);
-       inBuf.data[inBuf.len++] = (inBufHex[i] & (0x01 << j) ? 0 : 1);	   
-	}
-  }  
-  */
-}
-
 
 byte RfidHidEmulator::emulate() {
 
@@ -63,6 +29,8 @@ byte RfidHidEmulator::emulate() {
   reset();  
   tagData.loadHex( exampleData );
   tagData.printAll();
+  tagData.encode();
+  tagData.printEncoded();
   
   attachInterrupt(1, intEmulateWrapper, RISING);
   
