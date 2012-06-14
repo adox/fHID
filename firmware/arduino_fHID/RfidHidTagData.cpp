@@ -84,7 +84,7 @@ void RfidHidTagData::encode() {
 	byte dataCopy[DATA_BUF_LEN];
 	int lengthCopy;
 	
-	memcpy(data, dataCopy, length); // store original data to temp buffer
+	memcpy(dataCopy, data, length); // store original data to temp buffer
 	lengthCopy = length;			// store length
 	
 	clear();
@@ -97,11 +97,11 @@ void RfidHidTagData::encode() {
 	
 	for(int i = 0; i < lengthCopy; i++) {
 		if( dataCopy[i] == 1 ) {
-			insertBit( dataCopy[1] );
-			insertBit( dataCopy[0] );
+			insertBit( 1 );
+			insertBit( 0 );
 		} else {
-			insertBit( dataCopy[0] );
-			insertBit( dataCopy[1] );
+			insertBit( 0 );
+			insertBit( 1 );
 		}			
 	}
 }

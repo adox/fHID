@@ -5,6 +5,7 @@
 #include <htc.h>            /* HiTech General Includes */
 #include <stdint.h>         /* For uint8_t definition */
 #include <stdbool.h>        /* For true/false definition */
+#include "interrupts.h"
 
 /******************************************************************************/
 /* Interrupt Routines                                                         */
@@ -22,13 +23,32 @@ void interrupt isr(void)
     /* TODO Add High Priority interrupt routine code here. */
 
     /* Determine which flag generated the interrupt */
-    if(PIE1bits.TMR1IE && PIR1bits.TMR1IF) {
-        TMR1L = (GPIObits.GP4 ? 0xFF - 2 : 0xFF - 1);
-        TMR1H = 0xFF;
+    if(PIE1bits.TMR2IE && PIR1bits.TMR2IF) {
 
-        GPIObits.GP1 = ~GPIObits.GP1;
+        switch(divider) {
+            case 0:
+                if(tagData[tagIndex++]) { // tagData[tagIndex++]
+                    PR2 = 159;
+                    divider = 4;
+                } else {
+                    PR2 = 127;
+                    divider = 5;
+                }
 
-        PIR1bits.TMR1IF = 0;
+
+                if(tagIndex >= 96)
+                    tagIndex = 0;
+
+                break;
+
+            case 1:
+                CCPR1L = (tagData[tagIndex] ? 80 : 64);
+            default:
+                divider--;
+        }
+
+
+        PIR1bits.TMR2IF = 0;
 
     } else {
         /* Unhandled interrupts */
@@ -36,4 +56,4 @@ void interrupt isr(void)
 
 #endif
 
-}
+};

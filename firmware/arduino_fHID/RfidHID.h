@@ -16,6 +16,7 @@
 #define PIN_ENV_IN  2
 #define PIN_OCLK_IN 3
 #define PIN_NOE_OUT 7
+#define PIN_NOE_EMU 6
 
 #define NRST 8
 //#define BIT_IN 9 // moved to RfidHidEmulator

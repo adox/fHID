@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>system.h</itemPath>
       <itemPath>user.h</itemPath>
+      <itemPath>interrupts.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LibraryFiles"
                    displayName="Library Files"
@@ -69,6 +70,7 @@
       <HI-TECH-LINK>
       </HI-TECH-LINK>
       <PICkit2PlatformTool>
+        <property key="pk2settings.setvddvoltage" value="5,00"/>
       </PICkit2PlatformTool>
     </conf>
   </confs>

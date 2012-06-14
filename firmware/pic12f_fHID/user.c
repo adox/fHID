@@ -26,7 +26,7 @@ void InitApp(void)
     ANSELbits.ANS0 = 0;
     ANSELbits.ANS1 = 0;
     CMCON0bits.CM = 0x07; // cmp off
-    TRISIO &= 0b11111101; // GP1 as output
+
 
     /* init GP5 as digital pin */
     ANSELbits.ANS3 = 0;
@@ -39,6 +39,7 @@ void InitApp(void)
 
     /* if READ, GP0 = R/E = 1 */
     /* init CCP1 125 kHz 50% DT */
+    /*
     if(GPIObits.GP0) {
         TRISIO  = 0b11111111;
         PR2     = 15;
@@ -47,18 +48,26 @@ void InitApp(void)
         T2CONbits.TMR2ON = 1;
         TRISIO  &= 0b11111011;
     } else {
-        /* if READ, GP0 = R/E = 0 */
-        /* set TMR1 */
-        T1CONbits.TMR1CS = 1; // clk from t1cki pin
-        TMR1H = 0xFF;
-        TMR1L = 0x00;
-        T1CONbits.TMR1ON = 1;
+      */
+
+    if(1) {
+        /* if EMULATE, GP0 = R/E = 0 */
+        TRISIO &= 0b11011001; // GP1, GP2 as output GP5
+
+        /* set CCP 1 */
+        divider = 5;
+        PR2     = 127;
+        CCPR1L  = 64;
+        CCP1CON = 0b00001111;
+        T2CONbits.TMR2ON = 1;
 
         /* Enable interrupts */
-        PIR1bits.TMR1IF = 0;
-        PIE1bits.TMR1IE = 1;
+
+        PIR1bits.TMR2IF = 0;
+        PIE1bits.TMR2IE = 1;
         INTCONbits.PEIE = 1;
         INTCONbits.GIE = 1;
+
     };
 }
 
