@@ -1,5 +1,5 @@
-_ConfigureOscillator: CODE, 252 0 7
-_main: CODE, 259 0 5
-_InitApp: CODE, 215 0 37
-_isr: CODE, 118 0 97
-Total: 146
+_ConfigureOscillator: CODE, 263 0 7
+_main: CODE, 275 0 5
+_InitApp: CODE, 204 0 59
+_isr: CODE, 118 0 86
+Total: 157

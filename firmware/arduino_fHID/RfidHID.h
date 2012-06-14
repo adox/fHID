@@ -48,6 +48,7 @@ class RfidHid {
     void begin() { };
     void reset(byte r);
     void genOE(byte ena);
+    void emuOE(byte ena);
     void mode(byte m);
     byte read();
     byte emulate();

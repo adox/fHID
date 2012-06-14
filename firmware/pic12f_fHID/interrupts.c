@@ -27,7 +27,7 @@ void interrupt isr(void)
 
         switch(divider) {
             case 0:
-                if(tagData[tagIndex++]) { // tagData[tagIndex++]
+                if(GPIObits.GP4) {
                     PR2 = 159;
                     divider = 4;
                 } else {
@@ -35,6 +35,7 @@ void interrupt isr(void)
                     divider = 5;
                 }
 
+                GPIObits.GP5 = 1;
 
                 if(tagIndex >= 96)
                     tagIndex = 0;
@@ -42,7 +43,8 @@ void interrupt isr(void)
                 break;
 
             case 1:
-                CCPR1L = (tagData[tagIndex] ? 80 : 64);
+                CCPR1L = (GPIObits.GP4 ? 80 : 64);
+                GPIObits.GP5 = 0;
             default:
                 divider--;
         }

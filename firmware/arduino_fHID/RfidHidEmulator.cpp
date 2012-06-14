@@ -3,20 +3,13 @@
 
 void RfidHidEmulator::intEmulate() {
 
-  if(divider == 0) {
-    divider = (nextBit ? 4 : 5);
-    outputBit(nextBit);
-    nextBit = tagData.getDataNext();
+    outputBit(tagData.getDataNext());
 
     if( tagData.isEnd() ) {
       tagData.resetIndex();
       cycles++;
     }
     
-  } else {
-    divider--;
-  }
-
 };
 
 

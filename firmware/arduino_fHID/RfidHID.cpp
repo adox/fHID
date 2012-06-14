@@ -16,6 +16,7 @@ RfidHid::RfidHid() {
   pinMode(PIN_ENV_IN,  INPUT);
   pinMode(PIN_OCLK_IN, INPUT);
   pinMode(PIN_NOE_OUT, OUTPUT);
+  pinMode(PIN_NOE_EMU, OUTPUT);
   pinMode(NRST,   OUTPUT);
   pinMode(BIT_IN, OUTPUT);
   pinMode(OCLK,   INPUT);
@@ -32,6 +33,10 @@ void RfidHid::reset(byte nr) {
 
 void RfidHid::genOE(byte oe) {
   digitalWrite(PIN_NOE_OUT, oe);
+}
+
+void RfidHid::emuOE(byte oe) {
+  digitalWrite(PIN_NOE_EMU, oe);
 }
 
 void RfidHid::mode(byte m) {
@@ -58,10 +63,11 @@ byte RfidHid::emulate() {
   byte emulateStatus;
   
   mode(MODE_EMU);  
-  genOE(OE_OFF); 
+  emuOE(OE_ON); 
   reset(RESET_RUN); 
   emulateStatus = emulator.emulate(); 
   
+  emuOE(OE_OFF); 
   reset(RESET_HOLD);
   
   return emulateStatus;

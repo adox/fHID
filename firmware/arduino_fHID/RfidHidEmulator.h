@@ -4,7 +4,7 @@
 #include "RfidHidTagData.h"
 
 #define BIT_IN 9
-#define EMULATE_CYCLES_MAX 3
+#define EMULATE_CYCLES_MAX 20
 
 extern void intEmulateWrapper(); // in RfidHid.cpp
 

@@ -31,6 +31,9 @@ void InitApp(void)
     /* init GP5 as digital pin */
     ANSELbits.ANS3 = 0;
 
+    /* GP0 as inputs, all inputs in fact */
+    TRISIO  = 0b11111111;
+
     /* init pullups */
     OPTION_REGbits.nGPPU = 0;
     
@@ -39,20 +42,18 @@ void InitApp(void)
 
     /* if READ, GP0 = R/E = 1 */
     /* init CCP1 125 kHz 50% DT */
-    /*
+
     if(GPIObits.GP0) {
-        TRISIO  = 0b11111111;
         PR2     = 15;
         CCP1CON = 0b00001111;
         CCPR1L  = 8;
         T2CONbits.TMR2ON = 1;
         TRISIO  &= 0b11111011;
-    } else {
-      */
 
-    if(1) {
+    } else {
+
         /* if EMULATE, GP0 = R/E = 0 */
-        TRISIO &= 0b11011001; // GP1, GP2 as output GP5
+        TRISIO &= 0b11011011; // GP2, GP5 as output
 
         /* set CCP 1 */
         divider = 5;
