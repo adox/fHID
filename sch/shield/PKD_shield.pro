@@ -1,25 +1,25 @@
 EAGLE AutoRouter Statistics:
 
-Job           : C:/Projekty/fHID/sch/shield/PKD_shield.brd
+Job           : C:/Projekty/fHID/sch/shield/PKD_shield.job
 
-Start at      : 14:07:28 (2012-06-13)
-End at        : 14:07:29 (2012-06-13)
-Elapsed time  : 00:00:01
+Start at      : 13:56:17 (2012-08-02)
+End at        : 13:58:13 (2012-08-02)
+Elapsed time  : 00:00:33
 
-Signals       :    46   RoutingGrid: 50 mil  Layers: 2
-Connections   :   101   predefined:  32 ( 0 Vias )
+Signals       :    46   RoutingGrid: 1 mil  Layers: 2
+Connections   :    82   predefined:  0 ( 0 Vias )
 
-Router memory :   14472
+Router memory :   27625472
 
-Passname          :    Busses     Route
+Passname          :    Busses
 
-Time per pass     :  00:00:00  00:00:01
-Number of Ripups  :         0         0
-max. Level        :         0         0
-max. Total        :         0         0
+Time per pass     :  00:00:33
+Number of Ripups  :         0
+max. Level        :         0
+max. Total        :         0
 
-Routed            :        21        65
-Vias              :         0        58
-Resolution        :    52.5 %    96.0 %
+Routed            :         0
+Vias              :         0
+Resolution        :     0.0 %
 
-Final             : 96.0% finished
+Final             : 0.0% finished
