@@ -1,0 +1,12 @@
+Parts not found in 3dpack.dat or 3dusrpac.dat are:
+//C3	100u	E2,5-7
+//J1		10X02MTA
+//J2		10X02MTA
+//J3		10X02MTA
+//J4		10X02MTA
+//J5		10X02MTA
+//J6		10X02MTA
+//K1	TF2--5V	TF2
+//K2	TF2--5V	TF2
+//R1		CA9V
+//U$1	LCD_BL_16X2	HEADER_16
