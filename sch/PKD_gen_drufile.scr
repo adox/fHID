@@ -1,2 +1,0 @@
-DRC SAVE 'C:/Projekty/fHID/sch/PKD.dru';
-RUN brd_to_dsn_v6.ulp f;
