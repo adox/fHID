@@ -1,0 +1,2 @@
+DRC SAVE 'C:/Projekty/fHID/sch/shield/PKD_shield.dru';
+RUN brd_to_dsn_v6.ulp f;
